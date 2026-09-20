@@ -1,34 +1,9 @@
-const router = require('express').Router();
-const User = require('../models/User');
+const express = require('express');
+const router = express.Router();
+const { getUserProfile, updateUserProfile } = require('../controllers/userController');
 const protect = require('../middleware/authMiddleware');
 
-// Get User Profile
-router.get('/profile', protect, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-// Update User Profile
-router.put('/profile', protect, async (req, res) => {
-  try {
-    const { name, email } = req.body;
-    const user = await User.findById(req.user.id);
-
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    user.name = name || user.name;
-    user.email = email || user.email;
-
-    await user.save();
-    res.json({ message: 'Profile updated successfully', user: { name: user.name, email: user.email } });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+router.get('/profile', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile); // সরাসরি JSON ডেটা হ্যান্ডেল করবে
 
 module.exports = router;

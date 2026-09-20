@@ -48,4 +48,85 @@ const getAllNews = async (req, res) => {
   }
 };
 
-module.exports = { createNews, getUserNews, getAllNews };
+// 4. Update News Logic (Protected - Only Author Can Update)
+const updateNews = async (req, res) => {
+  try {
+    const newsId = req.params.id;
+    let news = await News.findById(newsId);
+
+    if (!news) {
+      return res.status(404).json({ success: false, message: 'News not found' });
+    }
+
+    // চেক করা যে ইউজার নিউজটি তৈরি করেছে কিনা (Security check)
+    if (news.author.toString() !== req.user.id) {
+      return res.status(401).json({ success: false, message: 'Not authorized to update this news' });
+    }
+
+    // ডেটা আপডেট করা
+    const { title, category, content, image } = req.body;
+    news.title = title || news.title;
+    news.category = category || news.category;
+    news.content = content || news.content;
+    news.image = image !== undefined ? image : news.image;
+
+    const updatedNews = await news.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'News updated successfully!',
+      news: updatedNews
+    });
+  } catch (error) {
+    console.error('Update News Error:', error);
+    res.status(500).json({ success: false, message: 'Server error while updating news' });
+  }
+};
+
+// 5. Delete News Logic (Protected - Only Author Can Delete)
+const deleteNews = async (req, res) => {
+  try {
+    const newsId = req.params.id;
+    const news = await News.findById(newsId);
+
+    if (!news) {
+      return res.status(404).json({ success: false, message: 'News not found' });
+    }
+
+    // চেক করা যে ইউজার নিউজটি তৈরি করেছে কিনা
+    if (news.author.toString() !== req.user.id) {
+      return res.status(401).json({ success: false, message: 'Not authorized to delete this news' });
+    }
+
+    await news.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: 'News deleted successfully!'
+    });
+  } catch (error) {
+    console.error('Delete News Error:', error);
+    res.status(500).json({ success: false, message: 'Server error while deleting news' });
+  }
+};
+const getNewsById = async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id).populate('author', 'name email');
+    if (!news) {
+      return res.status(404).json({ success: false, message: 'News not found' });
+    }
+    res.status(200).json({ success: true, news });
+  } catch (error) {
+    console.error('Get Single News Error:', error);
+    res.status(500).json({ success: false, message: 'Server error while fetching news' });
+  }
+};
+
+module.exports = { 
+  createNews, 
+  getUserNews, 
+  getAllNews, 
+  updateNews, 
+  getNewsById, 
+  deleteNews 
+};
