@@ -11,6 +11,70 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INITIAL_VALUES = { topic: TOPICS[0], name: '', email: '', message: '' };
 
+/* ------------------------------------------------------------------ */
+/* SVG Icon Components (Moved to Top)                                 */
+/* ------------------------------------------------------------------ */
+
+function Icon({ className, children }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {children}
+    </svg>
+  );
+}
+
+function PinIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z" />
+      <circle cx="12" cy="9" r="2.5" />
+    </Icon>
+  );
+}
+
+function MailIcon(props) {
+  return (
+    <Icon {...props}>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </Icon>
+  );
+}
+
+function PhoneIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" />
+    </Icon>
+  );
+}
+
+function ClockIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </Icon>
+  );
+}
+
+function CheckIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="m5 12 5 5 9-10" />
+    </Icon>
+  );
+}
+
 const CONTACT_DETAILS = [
   {
     label: 'Office',
@@ -37,13 +101,12 @@ const CONTACT_DETAILS = [
 ];
 
 /* ------------------------------------------------------------------ */
-/* API call                                                           */
+/* API call (সংশোধিত পাথ: /api/contact)                              */
 /* ------------------------------------------------------------------ */
 
 async function sendMessage(payload) {
   try {
-    // baseURL-এ ইতিমধ্যে '/api' যুক্ত থাকলে এখানে শুধু '/contact' দিলেই হবে
-    const response = await API.post('/contact', payload);
+    const response = await API.post('/api/contact', payload);
     return response.data;
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Request failed';
@@ -102,7 +165,7 @@ function Field({ id, label, error, hint, children }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Page                                                               */
+/* Page Component                                                     */
 /* ------------------------------------------------------------------ */
 
 export default function Contact() {
@@ -173,10 +236,10 @@ export default function Contact() {
               </p>
 
               <ul className="mt-8 space-y-6">
-                {CONTACT_DETAILS.map(({ label, value, href, icon: Icon }) => (
+                {CONTACT_DETAILS.map(({ label, value, href, icon: IconComponent }) => (
                   <li key={label} className="flex items-start gap-4">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10 text-blue-200">
-                      <Icon className="h-5 w-5" />
+                      <IconComponent className="h-5 w-5" />
                     </span>
                     <div>
                       <p className="text-xs font-medium text-slate-400">{label}</p>
@@ -361,69 +424,5 @@ export default function Contact() {
         </div>
       </div>
     </section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Inline icons                                                       */
-/* ------------------------------------------------------------------ */
-
-function Icon({ className, children }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {children}
-    </svg>
-  );
-}
-
-function PinIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M12 21s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z" />
-      <circle cx="12" cy="9" r="2.5" />
-    </Icon>
-  );
-}
-
-function MailIcon(props) {
-  return (
-    <Icon {...props}>
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path d="m3 7 9 6 9-6" />
-    </Icon>
-  );
-}
-
-function PhoneIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" />
-    </Icon>
-  );
-}
-
-function ClockIcon(props) {
-  return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 2" />
-    </Icon>
-  );
-}
-
-function CheckIcon(props) {
-  return (
-    <Icon {...props}>
-      <path d="m5 12 5 5 9-10" />
-    </Icon>
   );
 }

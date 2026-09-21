@@ -6,7 +6,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const newsRoutes = require('./routes/newsRoutes');
 const userRoutes = require('./routes/userRoutes');
-const contactRoutes = require('./routes/contactRoutes');
+const contactRoutes = require('./routes/contact');
 
 const app = express();
 app.use(express.json());
